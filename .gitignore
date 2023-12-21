@@ -10,7 +10,7 @@ build/
 .classpath
 .factorypath
 .project
-.settings
+.settigs
 .springBeans
 .sts4-cache
 bin/
@@ -18,6 +18,8 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+application-mysql.properties
+.DS_Store
 .idea
 *.iws
 *.iml
