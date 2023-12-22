@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class User {
+
   private Long userId;
   private String username;
   private String password;
@@ -17,5 +18,12 @@ public class User {
     this.email = email;
     this.registerDate = registerDate;
   }
-  public User(){}
+
+  public User() {
+  }
+
+  public boolean isNull() {
+    return userId == null && username == null && password == null
+        && email == null && registerDate == null;
+  }
 }
