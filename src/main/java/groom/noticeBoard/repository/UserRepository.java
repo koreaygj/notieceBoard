@@ -80,10 +80,12 @@ public class UserRepository {
       resultSet = preparedStatement.executeQuery();
       if (resultSet.next()) {
         log.info("user_id={}", resultSet.getLong("user_id"));
+        log.info("pw={}", resultSet.getString("password"));
         log.info("username={}", resultSet.getString("username"));
         log.info("email={}", resultSet.getString("email"));
         log.info("register_date={}", resultSet.getString("register_date"));
         user.setUserId(resultSet.getLong("user_id"));
+        user.setPassword(resultSet.getString("password"));
         user.setUsername(resultSet.getString("username"));
         user.setEmail(resultSet.getString("email"));
         user.setRegisterDate(resultSet.getTimestamp("register_date").toString());

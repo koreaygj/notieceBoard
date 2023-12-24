@@ -27,4 +27,13 @@ public class UserService {
     return !userRepository.findByUsername(username).isNull();
   }
 
+  public boolean verifyUserAccount(User user) throws SQLException {
+    User storeUser = userRepository.findByUsername(user.getUsername());
+    return storeUser.getPassword().equals(user.getPassword());
+  }
+
+  public User getStoredUser(User user) throws SQLException {
+    return userRepository.findByUsername(user.getUsername());
+  }
+
 }

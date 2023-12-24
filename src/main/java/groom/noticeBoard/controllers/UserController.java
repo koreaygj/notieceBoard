@@ -2,6 +2,7 @@ package groom.noticeBoard.controllers;
 
 import groom.noticeBoard.entity.User;
 import groom.noticeBoard.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class UserController {
     this.userService = userService;
   }
 
+  // register new User
   @GetMapping("/register-new")
   public String addUserForm(Model model) {
     model.addAttribute("user", new User());
@@ -35,8 +37,7 @@ public class UserController {
 
 
   @PostMapping("/register-new")
-  public String registerUser(@ModelAttribute User user, BindingResult bindingResult,
-      RedirectAttributes redirectAttributes)
+  public String registerUser(@ModelAttribute User user, BindingResult bindingResult)
       throws SQLException {
     log.info("user={}", user);
     if (user.getUsername() == null) {
@@ -58,4 +59,35 @@ public class UserController {
     User registerUser = userService.registerNewUserAccount(user);
     return "user";
   }
+
+  // user login form
+  @GetMapping("/log-in")
+  public String userLoginForm(Model model) {
+    model.addAttribute("user", new User());
+    return "form/loginForm";
+  }
+
+  @PostMapping("/log-in")
+  public String userLogin(@ModelAttribute User user, BindingResult bindingResult,
+      HttpSession session) throws SQLException {
+    log.info("user={}", user);
+    if (user.getUsername() == null) {
+      bindingResult.addError(new FieldError("user", "username", "username은 필수 항목입니다."));
+    }
+    if (user.getPassword() == null) {
+      bindingResult.addError(new FieldError("user", "password", "password는 필수 항목입니다."));
+    }
+    if (!userService.verifyUserAccount(user)) {
+      bindingResult.addError(
+          new FieldError("user", "password", "username 또는 password가 올바르지 않습니다."));
+    }
+    if (bindingResult.hasErrors()) {
+      return "form/loginForm";
+    }
+    User storedUser = userService.getStoredUser(user);
+    session.setAttribute("user", storedUser);
+    return "user";
+  }
+
+
 }
