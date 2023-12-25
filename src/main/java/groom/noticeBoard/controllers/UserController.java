@@ -57,7 +57,7 @@ public class UserController {
       return "form/registerNewUserForm";
     }
     User registerUser = userService.registerNewUserAccount(user);
-    return "user";
+    return "redirect:/form/loginForm";
   }
 
   // user login form
@@ -86,7 +86,7 @@ public class UserController {
     }
     User storedUser = userService.getStoredUser(user);
     session.setAttribute("user", storedUser);
-    return "user";
+    return "redirect:/posts";
   }
 
 
