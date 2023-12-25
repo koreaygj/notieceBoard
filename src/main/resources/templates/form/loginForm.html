@@ -2,9 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Log in</title>
-  <link rel="stylesheet" type="text/css" th:href="@{/styles/form.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/form/form.css}">
 </head>
 <body>
+<script th:inline="javascript">
+  window.onload = () => {
+    const waringMsg = [[ ${warningMsg}]];
+    if (waringMsg) {
+      alert(waringMsg);
+    }
+  }
+
+</script>
 <form action="profile.html" th:action th:object="${user}" method="post">
   <label for="username">username</label>
   <input type="text" id="username" th:field="*{username}" class="user-input"
