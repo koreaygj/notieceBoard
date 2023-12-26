@@ -57,7 +57,7 @@ public class UserController {
       return "form/registerNewUserForm";
     }
     User registerUser = userService.registerNewUserAccount(user);
-    return "redirect:/form/loginForm";
+    return "redirect:/user/log-in";
   }
 
   // user login form
