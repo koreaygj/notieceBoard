@@ -20,6 +20,9 @@ public class UserService {
   }
 
   public boolean emailExist(String email) throws SQLException {
+    if (email.isEmpty()) {
+      return false;
+    }
     return !userRepository.findByEmail(email).isNull();
   }
 
