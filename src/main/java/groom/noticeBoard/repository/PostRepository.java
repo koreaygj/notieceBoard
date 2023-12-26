@@ -40,7 +40,7 @@ public class PostRepository {
     }
   }
 
-  public List<Post> getAllPost() throws SQLException {
+  public List<Post> getAllPosts() throws SQLException {
     String sql = "select * from posts";
     Connection conn = null;
     PreparedStatement preparedStatement = null;
@@ -52,18 +52,7 @@ public class PostRepository {
       resultSet = preparedStatement.executeQuery();
 
       while (resultSet.next()) {
-        Post post = new Post();
-        post.setUserId(resultSet.getLong("user_id"));
-        post.setPostId(resultSet.getLong("post_id"));
-        post.setUsername(resultSet.getString("username"));
-        post.setTitle(resultSet.getString("title"));
-        post.setContent(resultSet.getString("content"));
-        post.setPostDate(resultSet.getString("post_date"));
-        if (resultSet.getString("update_date") != null) {
-          post.setUpdateDate(resultSet.getString("update_date"));
-        }
-        // Set other fields of the post object...
-
+        Post post = setPost(resultSet);
         posts.add(post);
       }
       return posts;
@@ -77,6 +66,47 @@ public class PostRepository {
       close(conn, preparedStatement, null);
     }
   }
+
+  public Post getSinglePost(Long id) throws SQLException {
+    String sql = "select * from posts where post_id = ?";
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet;
+    Post storedPost = new Post();
+    try {
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sql);
+      preparedStatement.setLong(1, id);
+      resultSet = preparedStatement.executeQuery();
+      if (resultSet.next()) {
+        storedPost = setPost(resultSet);
+      }
+      return storedPost;
+    } catch (SQLException e) {
+      log.error("DB error", e);
+      log.error("SQLException Message: " + e.getMessage());
+      log.error("SQLState: " + e.getSQLState());
+      log.error("ErrorCode: " + e.getErrorCode());
+      throw e;
+    } finally {
+      close(conn, preparedStatement, null);
+    }
+  }
+
+  private static Post setPost(ResultSet resultSet) throws SQLException {
+    Post post = new Post();
+    post.setUserId(resultSet.getLong("user_id"));
+    post.setPostId(resultSet.getLong("post_id"));
+    post.setUsername(resultSet.getString("username"));
+    post.setTitle(resultSet.getString("title"));
+    post.setContent(resultSet.getString("content"));
+    post.setPostDate(resultSet.getString("post_date"));
+    if (resultSet.getString("update_date") != null) {
+      post.setUpdateDate(resultSet.getString("update_date"));
+    }
+    return post;
+  }
+
 
   private void close(Connection conn, PreparedStatement preparedStatement, ResultSet resultSet) {
 
