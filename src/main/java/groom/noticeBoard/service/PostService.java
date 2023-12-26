@@ -16,8 +16,11 @@ public class PostService {
   private final PostRepository postRepository = new PostRepository();
 
   public Post registerPost(Post post) throws SQLException {
-    post = postRepository.save(post);
-    return post;
+    return postRepository.save(post);
+  }
+
+  public Post updatePost(Post post) throws SQLException {
+    return postRepository.update(post);
   }
 
   public List<Post> getAllPost() throws SQLException {
@@ -37,5 +40,12 @@ public class PostService {
     curPost.setUserId(curUser.getUserId());
     curPost.setUsername(curUser.getUsername());
     return curPost;
+  }
+
+  public Post setUpdatePost(Post curPost) throws SQLException {
+    Post storedPost = postRepository.getSinglePost(curPost.getPostId());
+    storedPost.setTitle(curPost.getTitle());
+    storedPost.setContent(curPost.getContent());
+    return storedPost;
   }
 }

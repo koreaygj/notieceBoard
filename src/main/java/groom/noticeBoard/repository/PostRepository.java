@@ -40,6 +40,30 @@ public class PostRepository {
     }
   }
 
+  public Post update(Post post) throws SQLException {
+    String sql = "update posts set title = ?, content = ?, update_date = ? where post_id = ?";
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sql);
+      preparedStatement.setString(1, post.getTitle());
+      preparedStatement.setString(2, post.getContent());
+      preparedStatement.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+      preparedStatement.setLong(4, post.getPostId());
+      preparedStatement.executeUpdate();
+      return post;
+    } catch (SQLException e) {
+      log.error("DB error", e);
+      log.error("SQLException Message: " + e.getMessage());
+      log.error("SQLState: " + e.getSQLState());
+      log.error("ErrorCode: " + e.getErrorCode());
+      throw e;
+    } finally {
+      close(conn, preparedStatement, null);
+    }
+  }
+
   public List<Post> getAllPosts() throws SQLException {
     String sql = "select * from posts";
     Connection conn = null;
