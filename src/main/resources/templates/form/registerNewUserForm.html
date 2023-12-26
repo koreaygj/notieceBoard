@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Sign in</title>
-  <link rel="stylesheet" type="text/css" th:href="@{/styles/form.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/form/form.css}">
 </head>
 <body>
 <form action="user.html" th:action th:object="${user}" method="post">
@@ -13,14 +13,14 @@
   <div>
     <label for="username">username</label>
     <input type="text" id="username" th:field="*{username}" class="user-input"
-           placeholder="사용할 이름을 입력하세요">
+           placeholder="사용할 이름을 입력하세요" required>
     <div class="field-error" th:errors="*{username}">
       User name 오류입니다.
     </div>
   </div>
   <div>
     <label for="password">password</label>
-    <input type="password" id="password" th:field="*{password}" class="user-input"/>
+    <input type="password" id="password" th:field="*{password}" class="user-input" required/>
     <div class="field-error" th:errors="*{password}">
       Password 오류입니다.
     </div>
@@ -30,7 +30,7 @@
     <input type="email" id="email" th:field="*{email}" class="user-input"/>
     <div class="field-error" th:errors="*{email}">이미 존재하는 이메일입니다.</div>
   </div>
-  <button>등록</button>
+  <button type="submit">등록</button>
 </form>
 </body>
 </html>
