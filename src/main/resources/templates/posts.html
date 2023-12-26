@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Posts</title>
+</head>
+<body>
+<script th:inline="javascript">
+  window.onload = () => {
+    const waringMsg = [[ ${warningMsg}]];
+    if (waringMsg) {
+      alert(waringMsg);
+    }
+  }
+</script>
+<h2>Posts</h2>
+<div class="post-list">
+  <div class="post" th:each="post : ${posts}">
+    <div th:onclick="'location.href=\'/posts/details/' + ${post.getPostId()} + '\''">
+      <h3 class="title" th:text="${post.getTitle()}">Title</h3>
+      <span class="user" th:text="${post.getUsername()}">Username</span>
+      <span class="date" th:text="${post.getPostDate()}">date</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
