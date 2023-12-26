@@ -21,6 +21,21 @@ public class PostService {
   }
 
   public List<Post> getAllPost() throws SQLException {
-    return postRepository.getAllPost();
+    return postRepository.getAllPosts();
+  }
+
+  public Post getPost(Long id) throws SQLException {
+    return postRepository.getSinglePost(id);
+  }
+
+  public boolean canUserAccessPost(Long userId, Long postId) throws SQLException {
+    Post curPost = getPost(postId);
+    return curPost.getUserId().equals(userId);
+  }
+
+  public Post setUserInfo(Post curPost, User curUser) {
+    curPost.setUserId(curUser.getUserId());
+    curPost.setUsername(curUser.getUsername());
+    return curPost;
   }
 }
