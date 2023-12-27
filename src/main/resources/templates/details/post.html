@@ -3,15 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Title</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/details/post.css}">
 </head>
 <body>
 <div>
-  <h1 th:text="${post.getTitle()}">Title</h1>
   <div class="sub-header">
-    <span th:text="${post.getUsername()}">작성자</span>
-    <div class="post-menu">
-      <span th:onclick="'location.href=\'/posts/edit/' + ${post.getPostId()} + '\''">수정하기</span>
-      <span th:onclick="'location.href=\'/posts/edit/' + ${post.getPostId()} + '\''">삭제하기</span>
+    <h2 th:text="${post.getTitle()}">Title</h2>
+    <div class="sub-menu">
+      <span class="username" th:text="'작성자: ' + ${post.getUsername()}">작성자</span>
+      <div class="post-menu">
+        <span th:onclick="'location.href=\'/posts/edit/' + ${post.getPostId()} + '\''">수정하기
+        </span>
+        <span th:onclick="'location.href=\'/posts/edit/' + ${post.getPostId()} + '\''">삭제하기
+        </span>
+      </div>
     </div>
   </div>
   <p th:text="${post.getContent()}">contents</p>

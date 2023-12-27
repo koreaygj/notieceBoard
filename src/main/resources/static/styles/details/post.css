@@ -1,0 +1,68 @@
+/* Style for the main content of the post */
+p {
+  padding: 15px;
+  line-height: 1.6;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  color: #333;
+  font-size: 24px; /* Larger font size for the title */
+}
+
+/* Style for the user information */
+span.user {
+  font-size: 14px;
+  color: #555;
+  display: block; /* makes the username appear on a new line */
+  margin-bottom: 5px;
+}
+
+/* Style for the content block */
+p.content {
+  font-size: 16px;
+  color: #666;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 10px; /* adds space between the user info and the content */
+}
+
+
+/* Style for the subtitle or sub-header */
+.sub_header {
+  font-size: 0.9em;
+  color: #777;
+  padding: 5px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.sub-menu {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+/* Style for the post menu which may contain actions like edit or delete */
+.post-menu {
+  text-align: right;
+  padding: 5px 15px;
+}
+
+/* Style for each clickable action in the post menu */
+.post-menu span {
+  cursor: pointer;
+  color: #337ab7;
+  margin-left: 10px;
+}
+
+
