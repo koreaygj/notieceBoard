@@ -48,4 +48,8 @@ public class PostService {
     storedPost.setContent(curPost.getContent());
     return storedPost;
   }
+
+  public void deletePost(Long postId) throws SQLException {
+    postRepository.delete(postId);
+  }
 }

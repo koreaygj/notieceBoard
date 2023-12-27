@@ -89,4 +89,24 @@ public class PostController {
         postService.setUpdatePost(post));
     return "redirect:/posts/details/" + id;
   }
+
+
+  @RequestMapping("/delete/{id}")
+  public String updatePost(Model model, @PathVariable("id") Long postId, HttpSession session,
+      RedirectAttributes redirectAttributes) throws SQLException {
+    User curUser = (User) session.getAttribute("user");
+    if (curUser == null) {
+      redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
+      return "redirect:/user/log-in";
+    }
+    if (!postService.canUserAccessPost(curUser.getUserId(), postId)) {
+      redirectAttributes.addFlashAttribute("warningMsg", "수정 권한이 없습니다.");
+      return "redirect:/posts";
+    }
+    redirectAttributes.addFlashAttribute("warningMsg", "삭제되었습니다.");
+    postService.deletePost(postId);
+    return "redirect:/posts";
+  }
+
+
 }

@@ -64,8 +64,29 @@ public class PostRepository {
     }
   }
 
+  public void delete(Long postId) throws SQLException {
+    String sql = "update posts set isDeleted = true where post_id = ?";
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      conn = getConnection();
+      preparedStatement = conn.prepareStatement(sql);
+      preparedStatement.setLong(1, postId);
+      preparedStatement.executeUpdate();
+      return;
+    } catch (SQLException e) {
+      log.error("DB error", e);
+      log.error("SQLException Message: " + e.getMessage());
+      log.error("SQLState: " + e.getSQLState());
+      log.error("ErrorCode: " + e.getErrorCode());
+      throw e;
+    } finally {
+      close(conn, preparedStatement, null);
+    }
+  }
+
   public List<Post> getAllPosts() throws SQLException {
-    String sql = "select * from posts";
+    String sql = "select * from posts where isDeleted = false";
     Connection conn = null;
     PreparedStatement preparedStatement = null;
     ResultSet resultSet;
@@ -92,7 +113,7 @@ public class PostRepository {
   }
 
   public Post getSinglePost(Long id) throws SQLException {
-    String sql = "select * from posts where post_id = ?";
+    String sql = "select * from posts where post_id = ? and isDeleted = false";
     Connection conn = null;
     PreparedStatement preparedStatement = null;
     ResultSet resultSet;
