@@ -2,8 +2,29 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Posts</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/postList.css}">
 </head>
 <body>
+
+<h2>Posts</h2>
+<div class="sub-menu">
+  <span th:onclick="'location.href=\'/posts/new-post'+'\''" class="new-post">new Post</span>
+</div>
+<div class="post-list">
+  <div class="post" th:each="post : ${posts}">
+    <div th:onclick="'location.href=\'/posts/details/' + ${post.getPostId()} + '\''">
+      <h3 class="title" th:text="${post.getTitle()}">Title</h3>
+      <div class="detail-container">
+        <span class="user" th:text="${post.getUsername()}">Username</span>
+        <div class="date-container">
+          <span class="date" th:text="'등록 일자 : ' + ${post.getPostDate()}">date</span>
+          <span class="date" th:text="'수정 일자 : ' + ${post.getUpdateDate()}">updateDate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script th:inline="javascript">
   window.onload = () => {
     const waringMsg = [[ ${warningMsg}]];
@@ -12,15 +33,5 @@
     }
   }
 </script>
-<h2>Posts</h2>
-<div class="post-list">
-  <div class="post" th:each="post : ${posts}">
-    <div th:onclick="'location.href=\'/posts/details/' + ${post.getPostId()} + '\''">
-      <h3 class="title" th:text="${post.getTitle()}">Title</h3>
-      <span class="user" th:text="${post.getUsername()}">Username</span>
-      <span class="date" th:text="${post.getPostDate()}">date</span>
-    </div>
-  </div>
-</div>
 </body>
 </html>
