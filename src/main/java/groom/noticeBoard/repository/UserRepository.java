@@ -1,24 +1,28 @@
 package groom.noticeBoard.repository;
 
-import groom.noticeBoard.connection.DBConnectionUtil;
 import groom.noticeBoard.entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UserRepository {
+
+  MainRepository mainRepository = MainRepository.getMainRepository();
+
+  @Getter
+  private static final UserRepository userRepository = new UserRepository();
 
   public User save(User user) throws SQLException {
     String sql = "insert into users(username, password, email, register_date) values (?, ? , ?, ?)";
     Connection conn = null;
     PreparedStatement preparedStatement = null;
     try {
-      conn = getConnection();
+      conn = mainRepository.getConnection();
       preparedStatement = conn.prepareStatement(sql);
       preparedStatement.setString(1, user.getUsername());
       preparedStatement.setString(2, user.getPassword());
@@ -33,35 +37,10 @@ public class UserRepository {
       log.error("ErrorCode: " + e.getErrorCode());
       throw e;
     } finally {
-      close(conn, preparedStatement, null);
+      mainRepository.close(conn, preparedStatement, null);
     }
   }
 
-  private void close(Connection conn, Statement statement, ResultSet resultSet) {
-    if (resultSet != null) {
-      try {
-        resultSet.close();
-      } catch (SQLException e) {
-        log.info("error", e);
-      }
-    }
-
-    if (statement != null) {
-      try {
-        statement.close();
-      } catch (SQLException e) {
-        log.info("error", e);
-      }
-    }
-
-    if (conn != null) {
-      try {
-        conn.close();
-      } catch (SQLException e) {
-        log.info("error", e);
-      }
-    }
-  }
 
   public User findByUsername(String username) throws SQLException {
     String sql = "select * from users where username = ?";
@@ -74,7 +53,7 @@ public class UserRepository {
     ResultSet resultSet = null;
     User user = new User();
     try {
-      conn = getConnection();
+      conn = mainRepository.getConnection();
       preparedStatement = conn.prepareStatement(sql);
       preparedStatement.setString(1, type);
       resultSet = preparedStatement.executeQuery();
@@ -95,16 +74,12 @@ public class UserRepository {
       log.error("db error", e);
       throw e;
     } finally {
-      close(conn, preparedStatement, resultSet);
+      mainRepository.close(conn, preparedStatement, resultSet);
     }
   }
 
   public User findByEmail(String email) throws SQLException {
     String sql = "select * from users where email = ?";
     return getUser(email, sql);
-  }
-
-  private Connection getConnection() {
-    return DBConnectionUtil.getConnection();
   }
 }

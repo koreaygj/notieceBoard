@@ -1,8 +1,6 @@
 package groom.noticeBoard.repository;
 
-import groom.noticeBoard.connection.DBConnectionUtil;
 import groom.noticeBoard.entity.Post;
-import groom.noticeBoard.entity.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,23 +8,30 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PostRepository {
 
+  MainRepository mainRepository = MainRepository.getMainRepository();
+
+  @Getter
+  private static final PostRepository postRepository = new PostRepository();
+
   public Post save(Post post) throws SQLException {
-    String sql = "insert into posts(user_id, title, username, content, post_date) values (?, ? , ?, ?, ?)";
+    String sql = "insert into posts(user_id, title, username, content, post_date, isDeleted) values (?, ? , ?, ?, ?, ?)";
     Connection conn = null;
     PreparedStatement preparedStatement = null;
     try {
-      conn = getConnection();
+      conn = mainRepository.getConnection();
       preparedStatement = conn.prepareStatement(sql);
       preparedStatement.setLong(1, post.getUserId());
       preparedStatement.setString(2, post.getTitle());
       preparedStatement.setString(3, post.getUsername());
       preparedStatement.setString(4, post.getContent());
       preparedStatement.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+      preparedStatement.setBoolean(6, false);
       preparedStatement.executeUpdate();
       return post;
     } catch (SQLException e) {
@@ -36,7 +41,7 @@ public class PostRepository {
       log.error("ErrorCode: " + e.getErrorCode());
       throw e;
     } finally {
-      close(conn, preparedStatement, null);
+      mainRepository.close(conn, preparedStatement, null);
     }
   }
 
@@ -45,7 +50,7 @@ public class PostRepository {
     Connection conn = null;
     PreparedStatement preparedStatement = null;
     try {
-      conn = getConnection();
+      conn = mainRepository.getConnection();
       preparedStatement = conn.prepareStatement(sql);
       preparedStatement.setString(1, post.getTitle());
       preparedStatement.setString(2, post.getContent());
@@ -60,7 +65,7 @@ public class PostRepository {
       log.error("ErrorCode: " + e.getErrorCode());
       throw e;
     } finally {
-      close(conn, preparedStatement, null);
+      mainRepository.close(conn, preparedStatement, null);
     }
   }
 
@@ -69,7 +74,7 @@ public class PostRepository {
     Connection conn = null;
     PreparedStatement preparedStatement = null;
     try {
-      conn = getConnection();
+      conn = mainRepository.getConnection();
       preparedStatement = conn.prepareStatement(sql);
       preparedStatement.setLong(1, postId);
       preparedStatement.executeUpdate();
@@ -81,7 +86,7 @@ public class PostRepository {
       log.error("ErrorCode: " + e.getErrorCode());
       throw e;
     } finally {
-      close(conn, preparedStatement, null);
+      mainRepository.close(conn, preparedStatement, null);
     }
   }
 
@@ -89,10 +94,10 @@ public class PostRepository {
     String sql = "select * from posts where isDeleted = false";
     Connection conn = null;
     PreparedStatement preparedStatement = null;
-    ResultSet resultSet;
+    ResultSet resultSet = null;
     List<Post> posts = new ArrayList<>();
     try {
-      conn = getConnection();
+      conn = mainRepository.getConnection();
       preparedStatement = conn.prepareStatement(sql);
       resultSet = preparedStatement.executeQuery();
 
@@ -108,7 +113,7 @@ public class PostRepository {
       log.error("ErrorCode: " + e.getErrorCode());
       throw e;
     } finally {
-      close(conn, preparedStatement, null);
+      mainRepository.close(conn, preparedStatement, resultSet);
     }
   }
 
@@ -116,10 +121,10 @@ public class PostRepository {
     String sql = "select * from posts where post_id = ? and isDeleted = false";
     Connection conn = null;
     PreparedStatement preparedStatement = null;
-    ResultSet resultSet;
+    ResultSet resultSet = null;
     Post storedPost = new Post();
     try {
-      conn = getConnection();
+      conn = mainRepository.getConnection();
       preparedStatement = conn.prepareStatement(sql);
       preparedStatement.setLong(1, id);
       resultSet = preparedStatement.executeQuery();
@@ -134,7 +139,7 @@ public class PostRepository {
       log.error("ErrorCode: " + e.getErrorCode());
       throw e;
     } finally {
-      close(conn, preparedStatement, null);
+      mainRepository.close(conn, preparedStatement, resultSet);
     }
   }
 
@@ -153,11 +158,4 @@ public class PostRepository {
   }
 
 
-  private void close(Connection conn, PreparedStatement preparedStatement, ResultSet resultSet) {
-
-  }
-
-  private Connection getConnection() {
-    return DBConnectionUtil.getConnection();
-  }
 }
