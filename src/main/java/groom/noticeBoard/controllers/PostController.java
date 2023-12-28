@@ -54,7 +54,7 @@ public class PostController {
       throws SQLException {
     Post storedPost = postService.registerPost(
         postService.setUserInfo(post, (User) session.getAttribute("user")));
-    return "posts";
+    return "redirect:posts";
   }
 
   @GetMapping("/details/{id}")
