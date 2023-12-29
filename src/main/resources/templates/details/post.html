@@ -20,6 +20,46 @@
     </div>
   </div>
   <p th:text="${post.getContent()}">contents</p>
+  <div class="comment-container">
+    <h3>Comments</h3>
+    <label>
+      <form th:action="'/posts/comment/' + ${post.getPostId()}" th:object="${comment}"
+            method="post">
+        <input th:field="*{content}" id="content" class="new-comment" placeholder="add comment..."
+               type="text"/>
+        <button id="comment-button" class="comment-button" type="submit">등록</button>
+      </form>
+    </label>
+    <div class="comments" th:each="comment: ${comments}">
+      <div class="comment-info">
+        <span class="comment-user" th:text="${comment.getUsername()}"></span>
+        <span class="comment-content" th:text="${comment.getContent()}"></span>
+        <span class="comment-date" th:text="${comment.getCommentDate()}"></span>
+      </div>
+      <div class="comment-utils"
+           th:if="${session.user != null} and ${session.user.getUserId()} == ${comment.getUserId}">
+        <span>수정</span>
+        <span>삭제</span>
+      </div>
+    </div>
+  </div>
 </div>
+<script>
+  document.getElementById("comment-button").addEventListener('click', (e) => {
+    const comment = document.getElementById("content").value;
+    const url = "/post/comment/" + window.location.pathname.split("/").at(3);
+    console.log(comment);
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({content: comment})
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+  });
+</script>
 </body>
 </html>

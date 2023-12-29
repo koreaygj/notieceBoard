@@ -65,4 +65,84 @@ p.content {
   margin-left: 10px;
 }
 
+/* 댓글 컨테이너 style ------------------------------------*/
+
+/* Style for the comment container */
+.comment-container {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+/* Style for each comment */
+.comments {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-top: 1px solid #eee;
+  padding: 10px 0;
+}
+
+/* Style for the comment user */
+.comment-user {
+  font-size: 1rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Style for the comment content */
+.comment-content {
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Style for the comment info, such as username and date */
+.comment-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Style for the comment utilities like edit and delete */
+.comment-utils {
+  margin-top: 10px;
+}
+
+.comment-utils span {
+  cursor: pointer;
+  color: #007bff;
+  margin-right: 15px;
+}
+
+/* Hover effect for utility buttons */
+.comment-utils span:hover {
+  text-decoration: underline;
+}
+
+/* Style for the input field to add a new comment */
+.new-comment {
+  width: 95%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Style for the '등록' button */
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
 
