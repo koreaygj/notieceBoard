@@ -1,12 +1,14 @@
 package groom.noticeBoard.controllers;
 
+import groom.noticeBoard.entity.Comment;
 import groom.noticeBoard.entity.Post;
 import groom.noticeBoard.entity.User;
+import groom.noticeBoard.service.CommentService;
 import groom.noticeBoard.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -24,9 +27,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PostController {
 
   private final PostService postService;
+  private final CommentService commentService;
 
-  public PostController(PostService postService) {
+  public PostController(PostService postService, CommentService commentService) {
     this.postService = postService;
+    this.commentService = commentService;
   }
 
   @GetMapping
@@ -58,15 +63,56 @@ public class PostController {
   }
 
   @GetMapping("/details/{id}")
-  public String getPostDetails(@PathVariable("id") Long postId, Model model) throws SQLException {
-    model.addAttribute("post", postService.getPost(postId));
+  public String getPostDetails(@PathVariable("id") Long postId, Model model,
+      RedirectAttributes redirectAttributes) throws SQLException {
+    Post curPost = postService.getPost(postId);
+    if (curPost.isDeleted()) {
+      redirectAttributes.addFlashAttribute("warningMsg", "삭제된 post입니다.");
+      return "redirect:posts";
+    }
+    model.addAttribute("post", curPost);
+    model.addAttribute("comment", new Comment());
+    model.addAttribute("comments", commentService.getComments(postId));
     return "details/post";
+  }
+
+  private Comment setComment(Long postId, User curUser, String content) {
+    Comment comment = new Comment();
+    comment.setPostId(postId);
+    comment.setUserId(curUser.getUserId());
+    comment.setUsername(curUser.getUsername());
+    comment.setContent(content);
+    comment.setDeleted(false);
+    return comment;
+  }
+
+  @PostMapping("comment/{id}")
+  public String addNewComment(@PathVariable("id") Long postId, Model model, HttpSession session,
+      @ModelAttribute Comment comment, RedirectAttributes redirectAttributes)
+      throws SQLException {
+    Post curPost = postService.getPost(postId);
+    User curUser = (User) session.getAttribute("user");
+    if (curPost.isDeleted()) {
+      redirectAttributes.addFlashAttribute("warningMsg", "삭제된 post입니다.");
+      return "redirect:/posts";
+    }
+    log.info("user={}", curUser);
+    if (curUser == null) {
+      redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
+      return "redirect:/user/log-in";
+    }
+    comment.setPostId(postId);
+    comment.setUserId(curUser.getUserId());
+    comment.setUsername(curUser.getUsername());
+    comment.setDeleted(false);
+    log.info("comment={}", comment);
+    commentService.registerComment(comment);
+    return "redirect:/posts/details/" + postId;
   }
 
   @GetMapping("/edit/{id}")
   public String editPost(@PathVariable("id") Long postId, Model model, HttpSession session,
-      RedirectAttributes redirectAttributes)
-      throws SQLException {
+      RedirectAttributes redirectAttributes) throws SQLException {
     User curUser = (User) session.getAttribute("user");
     if (curUser == null) {
       redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
