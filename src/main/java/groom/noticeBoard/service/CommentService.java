@@ -18,4 +18,8 @@ public class CommentService {
   public List<Comment> getComments(Long postId) throws SQLException {
     return commentRepository.searchCommentByPostId(postId);
   }
+
+  public void deleteComment(Long commentId) throws SQLException {
+    commentRepository.delete(commentId);
+  }
 }

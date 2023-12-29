@@ -88,4 +88,25 @@ public class CommentRepository {
     }
     return comment;
   }
+
+  public void delete(Long commentId) throws SQLException {
+    String sql = "update comments set isDeleted = true where comment_id = ?";
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      conn = mainRepository.getConnection();
+      preparedStatement = conn.prepareStatement(sql);
+      preparedStatement.setLong(1, commentId);
+      preparedStatement.executeUpdate();
+      return;
+    } catch (SQLException e) {
+      log.error("DB error", e);
+      log.error("SQLException Message: " + e.getMessage());
+      log.error("SQLState: " + e.getSQLState());
+      log.error("ErrorCode: " + e.getErrorCode());
+      throw e;
+    } finally {
+      mainRepository.close(conn, preparedStatement, null);
+    }
+  }
 }

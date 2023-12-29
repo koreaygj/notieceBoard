@@ -30,7 +30,7 @@
         <button id="comment-button" class="comment-button" type="submit">등록</button>
       </form>
     </label>
-    <div class="comments" th:each="comment: ${comments}">
+    <div class="comments" th:each="comment: ${comments}" th:id="${comment.getCommentId()}">
       <div class="comment-info">
         <span class="comment-user" th:text="${comment.getUsername()}"></span>
         <span class="comment-content" th:text="${comment.getContent()}"></span>
@@ -38,28 +38,32 @@
       </div>
       <div class="comment-utils"
            th:if="${session.user != null} and ${session.user.getUserId()} == ${comment.getUserId}">
-        <span>수정</span>
-        <span>삭제</span>
+        <span id="change-comment" class="change-comment">수정</span>
+        <span id="delete-comment" class="delete-comment">삭제</span>
       </div>
     </div>
   </div>
 </div>
-<script>
-  document.getElementById("comment-button").addEventListener('click', (e) => {
-    const comment = document.getElementById("content").value;
-    const url = "/post/comment/" + window.location.pathname.split("/").at(3);
-    console.log(comment);
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({content: comment})
+<script th:inline="javascript">
+  /* 댓글 삭제 이벤트 리스너 */
+  const deleteComments = document.getElementsByClassName("delete-comment");
+  Array.from(deleteComments).forEach((deleteComment) => {
+    deleteComment.addEventListener("click", (e) => {
+      const commentId = e.target.parentElement.parentElement.id;
+      const postId = [[${post.getPostId()}]];
+      const url = `/posts/comment/${postId}?comment_id=${commentId}`;
+      fetch(url, {
+        method: 'delete'
+      }).then((response) => {
+        if (!response.ok) {
+          throw new Error("server error");
+        }
+        window.location.reload();
+      }).catch(error => console.error('Error:', error));
     })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
-  });
+  })
+
+
 </script>
 </body>
 </html>

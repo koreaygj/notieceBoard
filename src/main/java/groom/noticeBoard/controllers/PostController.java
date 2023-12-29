@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -144,5 +149,23 @@ public class PostController {
     commentService.registerComment(comment);
     return "redirect:/posts/details/" + postId;
   }
+
+  @DeleteMapping("/comment/{postId}")
+  public ResponseEntity<?> deleteComment(@PathVariable("postId") Long postId,
+      @RequestParam("comment_id") Long commentId, HttpSession session,
+      RedirectAttributes redirectAttributes) throws SQLException {
+    User curUser = (User) session.getAttribute("user");
+    HttpHeaders headers = new HttpHeaders();
+    if (curUser == null) {
+      headers.add("Location", "/user/log-in");
+      redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
+      return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+    headers.add("Location", "/posts/details" + postId);
+    
+    commentService.deleteComment(commentId);
+    return new ResponseEntity<>(headers, HttpStatus.OK);
+  }
+
 
 }
