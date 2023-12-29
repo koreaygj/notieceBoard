@@ -144,13 +144,15 @@ public class PostRepository {
   }
 
   private static Post setPost(ResultSet resultSet) throws SQLException {
-    Post post = new Post();
-    post.setUserId(resultSet.getLong("user_id"));
-    post.setPostId(resultSet.getLong("post_id"));
-    post.setUsername(resultSet.getString("username"));
-    post.setTitle(resultSet.getString("title"));
-    post.setContent(resultSet.getString("content"));
-    post.setPostDate(resultSet.getString("post_date"));
+    Post post = new Post(
+        resultSet.getLong("post_id"),
+        resultSet.getLong("user_id"),
+        resultSet.getString("title"),
+        resultSet.getString("username"),
+        resultSet.getString("content"),
+        resultSet.getString("post_date"),
+        resultSet.getBoolean("isDeleted")
+    );
     if (resultSet.getString("update_date") != null) {
       post.setUpdateDate(resultSet.getString("update_date"));
     }

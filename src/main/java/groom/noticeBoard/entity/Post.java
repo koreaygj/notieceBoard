@@ -13,17 +13,18 @@ public class Post {
   private String username;
   private String content;
   private String postDate;
-
   private String updateDate;
+  private boolean isDeleted;
 
   public Post(Long postId, Long userId, String title, String username, String content,
-      String postDate) {
+      String postDate, boolean isDeleted) {
     this.postId = postId;
     this.userId = userId;
     this.title = title;
     this.username = username;
     this.content = content;
     this.postDate = postDate;
+    this.isDeleted = isDeleted;
   }
 
   public Post() {
