@@ -12,6 +12,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,40 +77,6 @@ public class PostController {
     return "details/post";
   }
 
-  private Comment setComment(Long postId, User curUser, String content) {
-    Comment comment = new Comment();
-    comment.setPostId(postId);
-    comment.setUserId(curUser.getUserId());
-    comment.setUsername(curUser.getUsername());
-    comment.setContent(content);
-    comment.setDeleted(false);
-    return comment;
-  }
-
-  @PostMapping("comment/{id}")
-  public String addNewComment(@PathVariable("id") Long postId, Model model, HttpSession session,
-      @ModelAttribute Comment comment, RedirectAttributes redirectAttributes)
-      throws SQLException {
-    Post curPost = postService.getPost(postId);
-    User curUser = (User) session.getAttribute("user");
-    if (curPost.isDeleted()) {
-      redirectAttributes.addFlashAttribute("warningMsg", "삭제된 post입니다.");
-      return "redirect:/posts";
-    }
-    log.info("user={}", curUser);
-    if (curUser == null) {
-      redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
-      return "redirect:/user/log-in";
-    }
-    comment.setPostId(postId);
-    comment.setUserId(curUser.getUserId());
-    comment.setUsername(curUser.getUsername());
-    comment.setDeleted(false);
-    log.info("comment={}", comment);
-    commentService.registerComment(comment);
-    return "redirect:/posts/details/" + postId;
-  }
-
   @GetMapping("/edit/{id}")
   public String editPost(@PathVariable("id") Long postId, Model model, HttpSession session,
       RedirectAttributes redirectAttributes) throws SQLException {
@@ -154,5 +121,28 @@ public class PostController {
     return "redirect:/posts";
   }
 
+  @PostMapping("comment/{postId}")
+  public String addNewComment(@PathVariable("postId") Long postId, Model model, HttpSession session,
+      @ModelAttribute Comment comment, RedirectAttributes redirectAttributes)
+      throws SQLException {
+    Post curPost = postService.getPost(postId);
+    User curUser = (User) session.getAttribute("user");
+    if (curPost.isDeleted()) {
+      redirectAttributes.addFlashAttribute("warningMsg", "삭제된 post입니다.");
+      return "redirect:/posts";
+    }
+    log.info("user={}", curUser);
+    if (curUser == null) {
+      redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
+      return "redirect:/user/log-in";
+    }
+    comment.setPostId(postId);
+    comment.setUserId(curUser.getUserId());
+    comment.setUsername(curUser.getUsername());
+    comment.setDeleted(false);
+    log.info("comment={}", comment);
+    commentService.registerComment(comment);
+    return "redirect:/posts/details/" + postId;
+  }
 
 }
