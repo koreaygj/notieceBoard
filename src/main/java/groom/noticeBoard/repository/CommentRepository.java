@@ -109,4 +109,27 @@ public class CommentRepository {
       mainRepository.close(conn, preparedStatement, null);
     }
   }
+
+  public void update(Long commentId, String updateContent) throws SQLException {
+    String sql = "update comments set content = ?, update_date = ? where comment_id = ?";
+    Connection conn = null;
+    PreparedStatement preparedStatement = null;
+    try {
+      conn = mainRepository.getConnection();
+      preparedStatement = conn.prepareStatement(sql);
+      preparedStatement.setString(1, updateContent);
+      preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+      preparedStatement.setLong(3, commentId);
+      preparedStatement.executeUpdate();
+      return;
+    } catch (SQLException e) {
+      log.error("DB error", e);
+      log.error("SQLException Message: " + e.getMessage());
+      log.error("SQLState: " + e.getSQLState());
+      log.error("ErrorCode: " + e.getErrorCode());
+      throw e;
+    } finally {
+      mainRepository.close(conn, preparedStatement, null);
+    }
+  }
 }

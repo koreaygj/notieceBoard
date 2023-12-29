@@ -22,4 +22,8 @@ public class CommentService {
   public void deleteComment(Long commentId) throws SQLException {
     commentRepository.delete(commentId);
   }
+
+  public void updateComment(Long commentId, String content) throws SQLException {
+    commentRepository.update(commentId, content);
+  }
 }

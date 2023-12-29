@@ -34,7 +34,10 @@
       <div class="comment-info">
         <span class="comment-user" th:text="${comment.getUsername()}"></span>
         <span class="comment-content" th:text="${comment.getContent()}"></span>
-        <span class="comment-date" th:text="${comment.getCommentDate()}"></span>
+        <span class="comment-date" th:if="${comment.getUpdateDate() != null}"
+              th:text="${comment.getUpdateDate()}"></span>
+        <span class="comment-date" th:unless="${comment.getUpdateDate() != null}"
+              th:text="${comment.getCommentDate()}"></span>
       </div>
       <div class="comment-utils"
            th:if="${session.user != null} and ${session.user.getUserId()} == ${comment.getUserId}">
@@ -63,7 +66,53 @@
     })
   })
 
+  /* 댓글 수정 이벤트 리스터 */
+  const changeComments = document.getElementsByClassName("change-comment");
+  Array.from(changeComments).forEach((changeComment) => {
+    changeComment.addEventListener("click", (e) => {
+      const commentId = e.target.parentElement.parentElement.id;
+      const commentContent = e.target.parentElement.previousElementSibling.querySelector(
+          '.comment-content');
 
+      console.log(commentId);
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = commentContent.innerText;
+      input.id = 'input-content-' + commentId;
+
+      commentContent.parentNode.replaceChild(input, commentContent);
+
+      // Replace the span with the input
+      const saveButton = document.createElement('button');
+      saveButton.innerText = 'Save';
+      saveButton.addEventListener('click', () => {
+        submitCommentUpdate(commentId, input.value);
+        // Replace the input with the updated span when saving
+        commentContent.innerText = input.value;
+        input.parentNode.replaceChild(commentContent, input);
+        // Remove the save button after saving
+        saveButton.parentNode.removeChild(saveButton);
+      });
+      input.parentNode.insertBefore(saveButton, input.nextSibling);
+
+    })
+  })
+  const submitCommentUpdate = (commentId, updatedContent) => {
+    const postId = [[${post.getPostId()}]];
+    const url = `/posts/comment/${postId}?comment_id=${commentId}`;
+    fetch(url, {
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({content: updatedContent})
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error("server error");
+      }
+      window.location.reload();
+    }).catch(error => console.error('Error:', error));
+  }
 </script>
 </body>
 </html>

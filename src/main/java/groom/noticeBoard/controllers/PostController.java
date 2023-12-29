@@ -12,6 +12,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -161,10 +163,25 @@ public class PostController {
       redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
       return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
-    headers.add("Location", "/posts/details" + postId);
-    
     commentService.deleteComment(commentId);
-    return new ResponseEntity<>(headers, HttpStatus.OK);
+    return ResponseEntity.ok("ok");
+  }
+
+  @PutMapping("/comment/{postId}")
+  public ResponseEntity<?> updateComment(@PathVariable("postId") Long postId,
+      @RequestParam("comment_id") Long commentId, HttpSession session,
+      @RequestBody Map<String, String> request,
+      RedirectAttributes redirectAttributes) throws SQLException {
+    User curUser = (User) session.getAttribute("user");
+    String content = request.get("content");
+    HttpHeaders headers = new HttpHeaders();
+    if (curUser == null) {
+      headers.add("Location", "/user/log-in");
+      redirectAttributes.addFlashAttribute("warningMsg", "로그인이 필요한 기능입니다.");
+      return new ResponseEntity<>(headers, HttpStatus.FOUND);
+    }
+    commentService.updateComment(commentId, content);
+    return ResponseEntity.ok("ok");
   }
 
 
