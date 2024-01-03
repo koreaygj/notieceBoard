@@ -1,7 +1,6 @@
 package groom.noticeBoard.service;
 
 import groom.noticeBoard.entity.User;
-import groom.noticeBoard.error.UserAlreadyExistsException;
 import groom.noticeBoard.repository.UserRepository;
 import java.sql.SQLException;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ public class UserService {
   private final UserRepository userRepository = new UserRepository();
 
 
-  public User registerNewUserAccount(User user) throws SQLException, UserAlreadyExistsException {
+  public User registerNewUserAccount(User user) throws SQLException {
     user = userRepository.save(user);
     return user;
   }

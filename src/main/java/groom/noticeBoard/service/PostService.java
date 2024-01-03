@@ -3,7 +3,6 @@ package groom.noticeBoard.service;
 import groom.noticeBoard.entity.Post;
 import groom.noticeBoard.entity.User;
 import groom.noticeBoard.repository.PostRepository;
-import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
